@@ -7,11 +7,14 @@ function git_version_block_get() {
     return $version;
 
   if($cached = cache_get('git_version_block')) {
-    $version = $cached->data;
-    return $version;
+    if ($cached->expire >= REQUEST_TIME) {
+      $version = $cached->data;
+      return $version;
+    }
   }
   $version = shell_exec('git describe --always --tag');
-  cache_set('git_version_block', $version, 'cache', time() + 10 * 60 * 60);
+  $version .= ' – ' . shell_exec('git rev-parse --abbrev-ref HEAD');
+  cache_set('git_version_block', $version, 'cache', REQUEST_TIME + 10 * 60 * 60);
   return $version;
 }
 
