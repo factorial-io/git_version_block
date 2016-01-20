@@ -1,0 +1,34 @@
+<?php
+
+function git_version_block_get() {
+  static $version = NULL;
+
+  if (!is_null($version))
+    return $version;
+
+  if($cached = cache_get('git_version_block')) {
+    $version = $cached->data;
+    return $version;
+  }
+  $version = shell_exec('git describe --always --tag');
+  cache_set('git_version_block', $version, 'cache', time() + 10 * 60 * 60);
+  return $version;
+}
+
+
+function git_version_block_block_info() {
+  $blocks['git_version'] = array(
+    'info' => t('current git version'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+
+function git_version_block_block_view($delta) {
+  $block = array();
+  $block['content'] = git_version_block_get();
+
+  return $block;
+}

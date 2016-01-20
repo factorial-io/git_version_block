@@ -1,0 +1,6 @@
+name = git version block
+description = "show git version in a block"
+package = Development
+core = 7.x
+dependencies[] = system (>7.10)
+dependencies[] = block
